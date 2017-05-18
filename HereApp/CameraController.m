@@ -20,7 +20,7 @@
 
 @implementation CameraController
 
-//static NSInteger const MAX_RESOLUTION = 3000000;
+static NSInteger const MAX_RESOLUTION = 3000000;
 
 -(void) visualizacion: (bool) value {
     
@@ -86,17 +86,37 @@
     _mImage.image = img;
     _mGPSLocation.text = [NSString stringWithFormat:@"Latitud: %f - Longitud:%f", _best_location.coordinate.latitude, _best_location.coordinate.longitude];
     
-    /*
+    
     NSInteger nPixels = img.size.height*img.size.width;
     if(nPixels>MAX_RESOLUTION){
         float scale=((float)MAX_RESOLUTION)/nPixels;
-        img=[Report_bussiness resizeImage:img toSize:CGSizeMake(img.size.width*scale, img.size.height*scale)];
+        img = [self resizeImage:img toSize:CGSizeMake(img.size.width*scale, img.size.height*scale)];
     }
-    */
+    
     
     [self visualizacion:NO];
     
     [picker dismissViewControllerAnimated:true completion:nil];
+}
+
+-(UIImage *)resizeImage:(UIImage *)image toSize:(CGSize)size
+{
+    CGFloat scale = MAX(size.width/image.size.width, size.height/image.size.height);
+    CGFloat width = image.size.width * scale;
+    CGFloat height = image.size.height * scale;
+    CGRect imageRect = CGRectMake((size.width - width)/2.0f,
+                                  (size.height - height)/2.0f,
+                                  width,
+                                  height);
+    
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+    [image drawInRect: imageRect];
+    
+    UIImage *smallImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return smallImage;
 }
 
 - (IBAction)acceptButtonAction:(id)sender {
